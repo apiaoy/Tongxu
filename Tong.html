@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>青铜礼器</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: "Songti SC", "STSong", "SimSun", "Microsoft YaHei", serif;
+      /* 壁画风格背景图 */
+     background-image: url('./images/bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-color: #2a1e14;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(60,40,20,0.3) 0%, rgba(20,12,6,0.8) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    canvas {
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    #header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 28px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+        /* ============ Logo 样式 ============ */
+    #header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      padding: 24px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    #title-block {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 22px 10px 14px;
+      background: rgba(30, 22, 14, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 60px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    /* logo 印章 */
+    #title-block .logo-seal {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(212, 175, 55, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: #e6c27a;
+      background: radial-gradient(circle at 30% 30%, rgba(212, 175, 55, 0.18), transparent 70%);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.25), inset 0 0 12px rgba(212, 175, 55, 0.12);
+      flex-shrink: 0;
+    }
+
+    /* logo 文字 */
+    #title-block .logo-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    #title-block .logo-text h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 6px;
+      color: #f5ecd7;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      line-height: 1.2;
+      padding-left: 6px;
+    }
+
+    #title-block .logo-text .subtitle {
+      margin-top: 3px;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: rgba(212, 175, 55, 0.75);
+      text-transform: uppercase;
+      padding-left: 6px;
+    }
+
+    /* 移动端 */
+    @media (max-width: 768px) {
+      #header { padding: 14px 16px; }
+      #title-block { padding: 8px 16px 8px 10px; gap: 12px; }
+      #title-block .logo-seal { width: 34px; height: 34px; font-size: 1rem; }
+      #title-block .logo-text h1 { font-size: 0.9rem; letter-spacing: 4px; }
+      #title-block .logo-text .subtitle { font-size: 0.5rem; letter-spacing: 2px; }
+    }
+
+    #model-nav {
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0;
+      z-index: 200;
+      pointer-events: auto;
+      background: rgba(30, 22, 14, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    #model-nav button {
+      background: transparent;
+      border: none;
+      color: rgba(245, 236, 215, 0.7);
+      padding: 12px 26px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    #model-nav button + button {
+      border-left: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    #model-nav button:hover {
+      color: #f5ecd7;
+      background: rgba(212, 175, 55, 0.12);
+    }
+
+    #model-nav button.active {
+      color: #1a1410;
+      background: linear-gradient(145deg, #e6c27a, #c9a04e);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 8px rgba(212,175,55,0.4);
+    }
+
+    #info-nav {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 14px;
+      z-index: 200;
+      pointer-events: auto;
+    }
+
+    #info-nav button {
+      background: rgba(30, 22, 14, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: rgba(245, 236, 215, 0.8);
+      padding: 11px 24px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    #info-nav button:hover {
+      color: #1a1410;
+      border-color: rgba(212, 175, 55, 0.8);
+      background: linear-gradient(145deg, #e6c27a, #c9a04e);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+      transform: translateY(-2px);
+    }
+
+    #info-nav button:active {
+      transform: translateY(0);
+    }
+
+    #description-box {
+      position: absolute;
+      bottom: 115px;
+      left: 50%;
+      transform: translateX(-50%) translateY(15px);
+      width: 90%;
+      max-width: 680px;
+      background: rgba(30, 22, 14, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 24px;
+      padding: 30px 40px;
+      color: #f5ecd7;
+      text-align: left;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 150;
+    }
+
+    #description-box.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    #description-box h3 {
+      margin: 0 0 14px;
+      color: #e6c27a;
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: 4px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    }
+
+    #description-box p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 2;
+      letter-spacing: 1px;
+      color: rgba(245, 236, 215, 0.9);
+    }
+
+    #loading-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #e6c27a;
+      font-size: 1rem;
+      letter-spacing: 6px;
+      background: rgba(30, 22, 14, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 20px 48px;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 50px;
+      display: none;
+      z-index: 300;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    #instruction {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      color: rgba(245, 236, 215, 0.5);
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      z-index: 100;
+      pointer-events: none;
+      background: rgba(30, 22, 14, 0.4);
+      backdrop-filter: blur(8px);
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1px solid rgba(212, 175, 55, 0.15);
+    }
+    /* ============ 初始界面 ============ */
+    #start-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-image: url('https://images.unsplash.com/photo-1615800098779-1be32e60cca3?auto=format&fit=crop&w=1920&q=80');
+
+      background-size: cover;
+      background-position: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #start-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(60,40,20,0.55) 0%, rgba(10,6,3,0.92) 100%);
+    }
+
+    #start-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #start-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 0 30px;
+      animation: fadeUp 1.2s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #start-content .seal {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 28px;
+      border: 2px solid rgba(212, 175, 55, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #d4af37;
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.35), inset 0 0 20px rgba(212, 175, 55, 0.15);
+    }
+
+    #start-content h1 {
+      margin: 0;
+      font-size: 3.2rem;
+      font-weight: 400;
+      letter-spacing: 20px;
+      color: #f5ecd7;
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9);
+      padding-left: 20px; /* 平衡字距 */
+    }
+
+    #start-content .en {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      letter-spacing: 8px;
+      color: rgba(212, 175, 55, 0.85);
+      text-transform: uppercase;
+    }
+
+    #start-content .divider {
+      width: 120px;
+      height: 1px;
+      margin: 34px auto;
+      background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.7), transparent);
+    }
+
+    #start-content .desc {
+      max-width: 520px;
+      margin: 0 auto 44px;
+      font-size: 0.95rem;
+      line-height: 2;
+      letter-spacing: 2px;
+      color: rgba(245, 236, 215, 0.75);
+    }
+
+    #start-btn {
+      background: transparent;
+      border: 1px solid rgba(212, 175, 55, 0.7);
+      color: #e6c27a;
+      padding: 15px 56px;
+      font-size: 1rem;
+      font-family: inherit;
+      letter-spacing: 8px;
+      cursor: pointer;
+      border-radius: 50px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      padding-left: 64px; /* 平衡字距 */
+    }
+
+    #start-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, #e6c27a, #c9a04e);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: -1;
+    }
+
+    #start-btn:hover {
+      color: #1a1410;
+      border-color: #e6c27a;
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+      letter-spacing: 10px;
+    }
+
+    #start-btn:hover::before {
+      opacity: 1;
+    }
+
+    #start-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ============ 退出按钮 ============ */
+    #exit-btn {
+      position: absolute;
+      top: 32px;
+      right: 40px;
+      z-index: 250;
+      background: rgba(30, 22, 14, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: rgba(245, 236, 215, 0.75);
+      padding: 9px 22px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      letter-spacing: 3px;
+      cursor: pointer;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    #exit-btn:hover {
+      color: #1a1410;
+      border-color: rgba(212, 175, 55, 0.8);
+      background: linear-gradient(145deg, #e6c27a, #c9a04e);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+      transform: translateY(-2px);
+    }
+
+    #exit-btn:active {
+      transform: translateY(0);
+    }
+
+        /* ============ 音乐开关 ============ */
+    #music-btn {
+      position: absolute;
+      top: 35px;
+      right: 120px;
+      z-index: 250;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(30, 22, 14, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: rgba(245, 236, 215, 0.75);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      line-height: 1;
+    }
+
+        /* ============ 音乐选择菜单 ============ */
+    #music-menu {
+      position: absolute;
+      top: 76px;
+      right: 108px;
+      z-index: 260;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(30, 22, 14, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    #music-menu.show {
+      display: flex;
+      animation: menuFadeIn 0.25s ease;
+    }
+
+    @keyframes menuFadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .music-item {
+      background: transparent;
+      border: none;
+      color: rgba(245, 236, 215, 0.75);
+      padding: 9px 24px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      letter-spacing: 3px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.25s ease;
+      text-align: center;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .music-item:hover {
+      color: #1a1410;
+      background: linear-gradient(145deg, #e6c27a, #c9a04e);
+    }
+
+    .music-item.active {
+      color: #e6c27a;
+      background: rgba(212, 175, 55, 0.12);
+    }
+
+    .music-item.active::before {
+      content: '♪';
+      position: absolute;
+      left: 8px;
+      color: #d4af37;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      #music-menu {
+        top: 54px;
+        right: 68px;
+        padding: 6px;
+        border-radius: 12px;
+      }
+      .music-item {
+        padding: 7px 18px;
+        font-size: 0.72rem;
+        letter-spacing: 2px;
+      }
+    }
+
+    #music-btn:hover {
+      color: #1a1410;
+      border-color: rgba(212, 175, 55, 0.8);
+      background: linear-gradient(145deg, #e6c27a, #c9a04e);
+      box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+      transform: translateY(-2px);
+    }
+
+    #music-btn:active {
+      transform: translateY(0) scale(0.95);
+    }
+
+    #music-btn.playing {
+      color: #e6c27a;
+      border-color: rgba(212, 175, 55, 0.7);
+      animation: musicPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes musicPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 0 rgba(212, 175, 55, 0.4); }
+      50%      { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(212, 175, 55, 0); }
+    }
+
+    @media (max-width: 768px) {
+      #exit-btn {
+        top: 16px;
+        right: 16px;
+        padding: 7px 14px;
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+      }
+       #music-btn {
+        top: 17px;
+        right: 68px;
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 初始界面 -->
+  <div id="start-screen">
+    <div id="start-content">
+      <div class="seal">礼</div>
+      <h1>青铜礼器</h1>
+      <div class="en">Bronze · Civilization</div>
+      <div class="divider"></div>
+      <p class="desc">
+        吉金铸史，礼乐重光。<br>
+        三件国之重器，静候君启。
+      </p>
+      <button id="start-btn">进 入</button>
+    </div>
+  </div>    
+
+  <div id="header">
+        <div id="title-block">
+      <div class="logo-seal">礼</div>
+      <div class="logo-text">
+        <h1>青铜礼器</h1>
+        <div class="subtitle">Bronze · Civilization</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="model-nav">
+    <button id="btn-model-0" class="active">四羊方尊</button>
+    <button id="btn-model-1">曾侯乙编钟</button>
+    <button id="btn-model-2">古滇铜鼓</button>
+  </div>
+
+  <div id="description-box">
+    <h3 id="desc-title">青铜礼器</h3>
+    <p id="desc-content">点击下方按钮切换模型，查看讲解。</p>
+  </div>
+
+  <div id="info-nav">
+    <button id="btn-info-0">历史背景</button>
+    <button id="btn-info-1">器型特征</button>
+    <button id="btn-info-2">铸造工艺</button>
+    <button id="btn-info-3">文化意义</button>
+  </div>
+
+  <div id="loading-text">载入中</div>
+
+  <div id="instruction">拖动旋转   滚轮缩放</div>
+
+   <!-- 背景音乐 -->
+  <audio id="bgm" loop preload="auto"></audio>
+
+  <!-- 粒子拼合音效 -->
+  <audio id="sfx-assemble" preload="auto">
+    <source src="./audio/assemble.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 音乐选择菜单 -->
+  <div id="music-menu">
+    <button class="music-item" data-src="./audio/bgm1.mp3" data-name="音乐1">音乐1</button>
+    <button class="music-item" data-src="./audio/bgm2.mp3" data-name="音乐2">音乐2</button>
+    <button class="music-item" data-src="./audio/bgm3.mp3" data-name="音乐3">音乐3</button>
+  </div>
+
+  <!-- 音乐开关按钮 -->
+  <button id="music-btn" title="背景音乐">♪</button>
+
+    <!-- 退出按钮 -->
+  <button id="exit-btn">退出</button>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    // ============ 模型配置 ============
+    const MODELS = [
+      { id: 'siyang',    name: '四羊方尊',   url: './models/siyang.glb',    scale: 1.0 },
+      { id: 'bianzhong', name: '曾侯乙编钟', url: './models/bianzhong.glb', scale: 1.0 },
+      { id: 'tonggu',    name: '古滇铜鼓',   url: './models/tonggu.glb',    scale: 1.0 }
+    ];
+
+    // ============ 讲解内容 ============
+    const INFO_CONTENT = {
+      0: {
+        history:  { title: '历史背景', content: '四羊方尊是商代晚期青铜礼器，1938年出土于湖南宁乡。它是中国现存商代青铜方尊中最大的一件，位列中国十大传世国宝之一，现藏于中国国家博物馆。' },
+        features: { title: '器型特征', content: '方尊口沿外侈，肩部四角各铸一羊，羊头探出器外，羊身与器身融为一体。通体饰有云雷纹、兽面纹，线条刚劲有力，造型雄奇。' },
+        casting:  { title: '铸造工艺', content: '采用块范法浇铸，分两次铸造。四羊与器身分铸后再合铸为一体，显示了商代晚期极高的青铜铸造水平，被史学界称为“臻于极致的青铜典范”。' },
+        culture:  { title: '文化意义', content: '羊在中国古代象征吉祥与美好。四羊方尊既是盛酒礼器，也是祭祀重器，体现了商代贵族的宗教信仰与审美追求。' }
+      },
+      1: {
+        history:  { title: '历史背景', content: '1978年出土于湖北随州，战国早期（约公元前433年）礼乐重器。全套65件，分三层八组悬挂，总重超5吨。' },
+        features: { title: '器型特征', content: '编钟按大小递减编组悬挂于木质钟架，钟体呈合瓦形。每钟可发两音（“一钟双音”），音域横跨五个半八度，十二律俱全。' },
+        casting:  { title: '铸造工艺', content: '“一钟双音”的铸造技艺堪称世界音乐史上的奇迹。钟体合金配比精确，壁厚与形状经过严密计算，才能实现敲击正鼓与侧鼓发出不同音高。' },
+        culture:  { title: '文化意义', content: '曾侯乙编钟改写了世界音乐史，实证了先秦中国已具备高度发达的音乐理论与科技水平，是礼乐制度的巅峰之作。' }
+      },
+      2: {
+        history:  { title: '历史背景', content: '铜鼓是中国南方及东南亚古代民族的重器，云南古滇文化的铜鼓尤为著名。云南石寨山、李家山等地出土的铜鼓，年代可追溯至战国至西汉时期。' },
+        features: { title: '器型特征', content: '鼓面中心有太阳纹，外围饰以晕圈、船纹、翔鹭纹等。鼓身胴部突出，腰部收缩，足部外撇。整体造型稳重，纹饰繁复精美。' },
+        casting:  { title: '铸造工艺', content: '多采用泥型合范法，鼓面与鼓身一次铸成。纹饰在范上精细雕刻，浇铸后自然浮现。部分铜鼓还经过调音刮痕处理，具有乐器功能。' },
+        culture:  { title: '文化意义', content: '铜鼓在古代是权力与财富的象征，用于祭祀、战争、节庆等场合。它既是乐器，也是礼器，承载着南方少数民族的信仰与文化记忆。' }
+      }
+    };
+
+    // ============ 场景 ============
+    const scene = new THREE.Scene();
+    scene.background = null;
+    scene.fog = new THREE.FogExp2(0x2a1e14, 0.025);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(3, 2, 5);
+    camera.lookAt(0, 0.8, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 0.8, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 1.2;
+    controls.maxPolarAngle = Math.PI / 2.2;
+
+    // ============ 灯光 ============
+scene.add(new THREE.AmbientLight(0x8080a0, 2.0));  
+
+const mainLight = new THREE.DirectionalLight(0xffffff, 2.2);
+mainLight.position.set(3, 6, 4);
+mainLight.castShadow = true;
+mainLight.shadow.mapSize.width = 1024;
+mainLight.shadow.mapSize.height = 1024;
+const d = 8;
+mainLight.shadow.camera.left = -d; mainLight.shadow.camera.right = d;
+mainLight.shadow.camera.top = d; mainLight.shadow.camera.bottom = -d;
+mainLight.shadow.camera.near = 2; mainLight.shadow.camera.far = 18;
+scene.add(mainLight);
+
+// 补充正面光，让模型正面更亮
+const frontLight = new THREE.DirectionalLight(0xfff0dd, 1.5);
+frontLight.position.set(0, 3, 8);
+scene.add(frontLight);
+
+// 补充侧面光
+const sideLight = new THREE.DirectionalLight(0xffe8cc, 1.0);
+sideLight.position.set(6, 3, 0);
+scene.add(sideLight);
+
+const backLight = new THREE.PointLight(0x6688bb, 1.2);  // 背光从 0.9 → 1.2
+backLight.position.set(-3, 3, -4);
+scene.add(backLight);
+
+const fillLight = new THREE.PointLight(0xffaa66, 1.0);  // 补光从 0.6 → 1.0
+fillLight.position.set(4, 1.5, 2);
+scene.add(fillLight);
+
+const bottomLight = new THREE.PointLight(0xaa8866, 0.6);  // 底光从 0.35 → 0.6
+bottomLight.position.set(0, -1, 2);
+scene.add(bottomLight);
+
+    // ============ 展台 ============
+    const platform = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.2, 2.2, 0.15, 64),
+      new THREE.MeshStandardMaterial({
+        color: 0x2a1e0c,
+        roughness: 0.7,
+        metalness: 0.25,
+        transparent: true,
+        opacity: 0.9
+      })
+    );
+    platform.receiveShadow = true;
+    platform.position.y = -0.08;
+    scene.add(platform);
+
+    // ============ 环境粒子 ============
+    const particlesGeo = new THREE.BufferGeometry();
+    const count = 500;
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count * 3; i += 3) {
+      pos[i] = (Math.random() - 0.5) * 16;
+      pos[i+1] = Math.random() * 6 + 0.5;
+      pos[i+2] = (Math.random() - 0.5) * 16;
+    }
+    particlesGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const particles = new THREE.Points(particlesGeo, new THREE.PointsMaterial({
+      color: 0xd4af37, size: 0.04, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending
+    }));
+    scene.add(particles);
+
+    // ============ 模型加载 ============
+    const loader = new GLTFLoader();
+    let currentModel = null;
+    let currentModelIndex = 0;
+    let currentInfoType = null;
+    let currentParticles = null;
+    let animFrameId = null;
+    const loadingEl = document.getElementById('loading-text');
+    const descBox = document.getElementById('description-box');
+    const descTitle = document.getElementById('desc-title');
+    const descContent = document.getElementById('desc-content');
+    let descTimeout = null;
+
+    function showLoading(show) {
+      loadingEl.style.display = show ? 'block' : 'none';
+    }
+
+    function setActiveModelBtn(index) {
+      document.querySelectorAll('#model-nav button').forEach((b, i) => {
+        b.classList.toggle('active', i === index);
+      });
+    }
+
+    // ===== 粒子拼合动画 =====
+    function playParticleAssembly(model, onComplete) {
+        playAssembleSound();   // 粒子动画开始时播放音效
+      // 1. 采样模型表面点 + 获取模型平均色
+      const samplePoints = [];
+      const MAX_SAMPLES = 6000;
+
+      model.updateMatrixWorld(true);
+
+      let avgR = 0, avgG = 0, avgB = 0, colorSamples = 0;
+
+      model.traverse((child) => {
+        if (!child.isMesh || !child.geometry) return;
+        const geo = child.geometry;
+        const posAttr = geo.attributes.position;
+        if (!posAttr) return;
+
+        const count = posAttr.count;
+        const step = Math.max(1, Math.floor(count / (MAX_SAMPLES / 2)));
+
+        for (let i = 0; i < count; i += step) {
+          const v = new THREE.Vector3().fromBufferAttribute(posAttr, i);
+          v.applyMatrix4(child.matrixWorld);
+          samplePoints.push(v);
+        }
+
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach((m) => {
+          if (m && m.color) {
+            avgR += m.color.r;
+            avgG += m.color.g;
+            avgB += m.color.b;
+            colorSamples++;
+          }
+        });
+      });
+
+      if (samplePoints.length < 800) {
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        for (let i = samplePoints.length; i < 3000; i++) {
+          samplePoints.push(new THREE.Vector3(
+            center.x + (Math.random() - 0.5) * size.x,
+            center.y + (Math.random() - 0.5) * size.y,
+            center.z + (Math.random() - 0.5) * size.z
+          ));
+        }
+      }
+
+      let particleColor = new THREE.Color(0x8b6b4d);
+      
+
+      const total = samplePoints.length;
+
+      const modelBox = new THREE.Box3().setFromObject(model);
+      const modelMinY = modelBox.min.y;
+      const modelMaxY = modelBox.max.y;
+      const modelHeight = modelMaxY - modelMinY;
+      const modelCenter = modelBox.getCenter(new THREE.Vector3());
+
+      const positions = new Float32Array(total * 3);
+      const starts = new Float32Array(total * 3);
+      const targets = new Float32Array(total * 3);
+      const delays = new Float32Array(total);
+
+      for (let i = 0; i < total; i++) {
+        const p = samplePoints[i];
+        targets[i*3] = p.x;
+        targets[i*3+1] = p.y;
+        targets[i*3+2] = p.z;
+
+        const radius = 3 + Math.random() * 3;
+        const theta = Math.random() * Math.PI * 2;
+        starts[i*3]   = modelCenter.x + radius * Math.cos(theta);
+        starts[i*3+1] = modelMinY - 0.5 - Math.random() * 1.5;
+        starts[i*3+2] = modelCenter.z + radius * Math.sin(theta);
+
+        positions[i*3]   = starts[i*3];
+        positions[i*3+1] = starts[i*3+1];
+        positions[i*3+2] = starts[i*3+2];
+
+        const hRatio = (p.y - modelMinY) / Math.max(modelHeight, 0.001);
+        delays[i] = hRatio * 0.5;
+      }
+
+      const particleGeo = new THREE.BufferGeometry();
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const particleMat = new THREE.PointsMaterial({
+        color: particleColor,
+        size: 0.025,
+        transparent: true,
+        opacity: 0.95,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true
+      });
+
+      const particles = new THREE.Points(particleGeo, particleMat);
+      particles.frustumCulled = false;
+      scene.add(particles);
+      currentParticles = particles;
+
+      const meshMats = [];
+      model.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach((m) => {
+            m.transparent = true;
+            m.opacity = 0;
+            meshMats.push(m);
+          });
+        }
+      });
+
+      const duration = 2400;
+      const startTime = performance.now();
+
+      function animateAssembly() {
+        const now = performance.now();
+        const t = Math.min((now - startTime) / duration, 1);
+
+        const posAttr = particleGeo.attributes.position;
+        const arr = posAttr.array;
+
+        for (let i = 0; i < total; i++) {
+          let localT = (t - delays[i]) / (1 - delays[i]);
+          localT = Math.max(0, Math.min(1, localT));
+          const ease = 1 - Math.pow(1 - localT, 3);
+
+          arr[i*3]   = starts[i*3]   + (targets[i*3]   - starts[i*3])   * ease;
+          arr[i*3+1] = starts[i*3+1] + (targets[i*3+1] - starts[i*3+1]) * ease;
+          arr[i*3+2] = starts[i*3+2] + (targets[i*3+2] - starts[i*3+2]) * ease;
+        }
+        posAttr.needsUpdate = true;
+
+        particleMat.opacity = 0.95 * (1 - Math.pow(t, 2.5));
+
+        const fadeT = Math.max(0, (t - 0.45) / 0.55);
+        meshMats.forEach((m) => {
+          m.opacity = Math.min(1, fadeT);
+        });
+
+        if (t < 1) {
+          animFrameId = requestAnimationFrame(animateAssembly);
+        } else {
+          scene.remove(particles);
+          particleGeo.dispose();
+          particleMat.dispose();
+          currentParticles = null;
+          animFrameId = null;
+
+          meshMats.forEach((m) => {
+            m.transparent = false;
+            m.opacity = 1;
+          });
+
+          if (onComplete) onComplete();
+        }
+      }
+
+      animateAssembly();
+    }
+
+    function loadModel(index) {
+      const config = MODELS[index];
+      if (!config) return;
+
+      if (animFrameId) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+      }
+      if (currentParticles) {
+        scene.remove(currentParticles);
+        currentParticles.geometry.dispose();
+        currentParticles.material.dispose();
+        currentParticles = null;
+      }
+      if (currentModel) {
+        scene.remove(currentModel);
+        currentModel = null;
+      }
+
+      setActiveModelBtn(index);
+      showLoading(true);
+
+      loader.load(
+        config.url,
+        (gltf) => {
+          const model = gltf.scene;
+          model.scale.setScalar(config.scale);
+          model.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
+
+          const box = new THREE.Box3().setFromObject(model);
+          const size = box.getSize(new THREE.Vector3());
+          const center = box.getCenter(new THREE.Vector3());
+
+          model.position.y = -box.min.y + 0.1;
+          model.position.x = -center.x;
+          model.position.z = -center.z;
+
+          scene.add(model);
+          currentModel = model;
+          currentModelIndex = index;
+
+          const newBox = new THREE.Box3().setFromObject(model);
+          const newSize = newBox.getSize(new THREE.Vector3());
+          const newCenter = newBox.getCenter(new THREE.Vector3());
+          const maxDim = Math.max(newSize.x, newSize.y, newSize.z);
+
+          const fitDistance = maxDim * 2.0;
+          controls.target.set(newCenter.x, newCenter.y, newCenter.z);
+          camera.position.set(
+            newCenter.x + fitDistance * 0.5,
+            newCenter.y + fitDistance * 0.35,
+            newCenter.z + fitDistance * 0.9
+          );
+          camera.lookAt(controls.target);
+
+          controls.minDistance = maxDim * 0.9;
+          controls.maxDistance = maxDim * 5;
+
+          showLoading(false);
+
+          playParticleAssembly(model, () => {
+            currentInfoType = null;
+            showInfo(index, 'history');
+          });
+        },
+        undefined,
+        (error) => {
+          console.error('模型加载失败:', error);
+          showLoading(false);
+          loadingEl.textContent = '模型加载失败，请检查 models/ 目录';
+          loadingEl.style.display = 'block';
+          setTimeout(() => { loadingEl.style.display = 'none'; }, 4000);
+        }
+      );
+    }
+
+    function showInfo(modelIndex, type) {
+      const content = INFO_CONTENT[modelIndex]?.[type];
+      if (!content) return;
+
+      if (currentInfoType === type && descBox.classList.contains('show')) {
+        descBox.classList.remove('show');
+        currentInfoType = null;
+        if (descTimeout) { clearTimeout(descTimeout); descTimeout = null; }
+        controls.autoRotateSpeed = 1.2;
+        return;
+      }
+
+      descTitle.textContent = content.title;
+      descContent.textContent = content.content;
+      descBox.classList.add('show');
+      currentInfoType = type;
+      controls.autoRotateSpeed = 2.0;
+
+      if (descTimeout) clearTimeout(descTimeout);
+      descTimeout = setTimeout(() => {
+        descBox.classList.remove('show');
+        currentInfoType = null;
+        controls.autoRotateSpeed = 1.2;
+      }, 8000);
+    }
+
+    MODELS.forEach((m, i) => {
+      document.getElementById(`btn-model-${i}`).addEventListener('click', () => loadModel(i));
+    });
+
+    document.getElementById('btn-info-0').addEventListener('click', () => showInfo(currentModelIndex, 'history'));
+    document.getElementById('btn-info-1').addEventListener('click', () => showInfo(currentModelIndex, 'features'));
+    document.getElementById('btn-info-2').addEventListener('click', () => showInfo(currentModelIndex, 'casting'));
+    document.getElementById('btn-info-3').addEventListener('click', () => showInfo(currentModelIndex, 'culture'));
+
+    descBox.addEventListener('click', () => {
+      descBox.classList.remove('show');
+      currentInfoType = null;
+      if (descTimeout) { clearTimeout(descTimeout); descTimeout = null; }
+      controls.autoRotateSpeed = 1.2;
+    });
+
+            // ===== 初始界面控制 =====
+    const startScreen = document.getElementById('start-screen');
+    const startBtn = document.getElementById('start-btn');
+
+        // ===== 背景音乐控制（三首可选） =====
+    const bgm = document.getElementById('bgm');
+    const musicBtn = document.getElementById('music-btn');
+    const musicMenu = document.getElementById('music-menu');
+    const musicItems = document.querySelectorAll('.music-item');
+    let musicPlaying = false;
+    let currentTrack = 0;   // 当前曲目索引
+
+    bgm.volume = 0.35;
+
+        // ===== 粒子拼合音效 =====
+    const sfxAssemble = document.getElementById('sfx-assemble');
+    sfxAssemble.volume = 0.6;   // 音效音量，可调
+
+    function playAssembleSound() {
+      try {
+        sfxAssemble.currentTime = 0;   // 重置到开头，支持连续播放
+        sfxAssemble.play().catch((err) => {
+          console.warn('音效播放失败:', err);
+        });
+      } catch (e) {
+        console.warn('音效播放异常:', e);
+      }
+    }
+
+    // 加载曲目（不自动播放）
+    function loadTrack(index) {
+      const item = musicItems[index];
+      if (!item) return;
+      const wasPlaying = musicPlaying;
+      bgm.src = item.dataset.src;
+      bgm.load();
+
+      // 更新菜单高亮
+      musicItems.forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+      currentTrack = index;
+
+      // 如果之前正在播放，切换后继续播放
+      if (wasPlaying) {
+        playMusic();
+      }
+    }
+
+    function updateMusicBtn() {
+      musicBtn.classList.toggle('playing', musicPlaying);
+      musicBtn.textContent = musicPlaying ? '♫' : '♪';
+    }
+
+    function playMusic() {
+      bgm.play().then(() => {
+        musicPlaying = true;
+        updateMusicBtn();
+      }).catch((err) => {
+        console.warn('音乐播放失败:', err);
+        musicPlaying = false;
+        updateMusicBtn();
+      });
+    }
+
+    function pauseMusic() {
+      bgm.pause();
+      musicPlaying = false;
+      updateMusicBtn();
+    }
+
+    // 点击音乐按钮：切换播放/暂停，并展开菜单
+    musicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (musicPlaying) {
+        pauseMusic();
+      } else {
+        if (!bgm.src) loadTrack(0);
+        playMusic();
+      }
+      // 同时切换菜单显示
+      musicMenu.classList.toggle('show');
+    });
+
+    // 点击菜单项：切换曲目
+    musicItems.forEach((item, i) => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (i === currentTrack) {
+          // 点击当前曲目：播放/暂停切换
+          if (musicPlaying) {
+            pauseMusic();
+          } else {
+            playMusic();
+          }
+        } else {
+          // 切换新曲目并自动播放
+          loadTrack(i);
+          if (!musicPlaying) playMusic();
+        }
+      });
+    });
+
+    // 点击页面其他区域关闭菜单
+    document.addEventListener('click', () => {
+      musicMenu.classList.remove('show');
+    });
+    musicMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // 点击「进入」→ 播放音乐 + 加载模型
+       startBtn.addEventListener('click', () => {
+      startScreen.classList.add('hide');
+      if (!bgm.src) loadTrack(0);
+      playMusic();
+      setTimeout(() => {
+        loadModel(0);
+      }, 400);
+    });
+
+    // ===== 退出按钮 =====                   
+    const exitBtn = document.getElementById('exit-btn');
+
+    exitBtn.addEventListener('click', () => {
+        pauseMusic();
+
+        if (!sfxAssemble.paused) {
+        sfxAssemble.pause();
+        sfxAssemble.currentTime = 0;
+      }
+      if (animFrameId) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+      }
+      if (currentParticles) {
+        scene.remove(currentParticles);
+        currentParticles.geometry.dispose();
+        currentParticles.material.dispose();
+        currentParticles = null;
+      }
+      if (currentModel) {
+        scene.remove(currentModel);
+        currentModel = null;
+      }
+      descBox.classList.remove('show');
+      currentInfoType = null;
+      if (descTimeout) { clearTimeout(descTimeout); descTimeout = null; }
+      setActiveModelBtn(0);
+      currentModelIndex = 0;
+      camera.position.set(3, 2, 5);
+      controls.target.set(0, 0.8, 0);
+      controls.autoRotateSpeed = 1.2;
+      camera.lookAt(controls.target);
+      startScreen.classList.remove('hide');
+    });
+
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      particles.rotation.y += 0.0002;
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
